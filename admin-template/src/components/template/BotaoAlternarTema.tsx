@@ -2,8 +2,8 @@ import { IconeSol } from "../icons"
 import { IconeLua } from "../icons"
 
 interface BotaoAlternarTemaProps {
-    tema: string
-    alternarTema: () => void
+    tema?: string
+    alternarTema?: () => void
 }
 
 

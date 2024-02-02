@@ -1,6 +1,7 @@
 import useAppData from "@/data/hook/UseAppData"
 import BotaoAlternarTema from "./BotaoAlternarTema"
 import Titulo from "./Titulo"
+import AvatarUsuario from "./AvatarUsuario"
 
 interface CabecalhoProps {
     titulo: string
@@ -14,8 +15,9 @@ export default function Cabecalho(props: CabecalhoProps) {
     return (
         <div className={`flex`}>
             <Titulo titulo={props.titulo} subtitulo={props.subtitulo}></Titulo>
-            <div className={`flex flex-grow justify-end`}>
+            <div className={`flex flex-grow justify-end items-center`}>
                 <BotaoAlternarTema tema={tema} alternarTema={alternarTema}/>
+                <AvatarUsuario className="ml-3"/>
             </div>
         </div>
     )
