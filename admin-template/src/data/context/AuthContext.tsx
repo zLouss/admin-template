@@ -7,11 +7,23 @@ import Cookies from 'js-cookie'
 interface AuthContextProps {
     usuario?: Usuario
     loginGoogle?: () => Promise<void>
-    logout?: () => Promise<void>
+    cadastrar: (email: string, senha: string) => Promise<void>
+    login: (email: string, senha: string) => Promise<void>
+    logout: () => Promise<void>
     carregando?: boolean
 }
 
-const AuthContext = createContext<AuthContextProps>({})
+const AuthContext = createContext<AuthContextProps>({
+    cadastrar: function (email: string, senha: string): Promise<void> {
+        throw new Error('Function not implemented.')
+    },
+    login: function (email: string, senha: string): Promise<void> {
+        throw new Error('Function not implemented.')
+    },
+    logout: function (): Promise<void> {
+        throw new Error('Function not implemented.')
+    }
+})
 
 async function usuarioNormalizado(usuarioFirebase: firebase.User): Promise<Usuario> {
     const token = await usuarioFirebase.getIdToken()
@@ -54,13 +66,35 @@ export function AuthProvider(props: any) {
         }
     }
 
+    async function login(email: string, senha: string) {
+        try {
+            setCarregando(true)
+            const resp = await firebase.auth().signInWithEmailAndPassword(email, senha)
+            await configurarSessao(resp.user)
+            route.push('/')
+        } finally {
+            setCarregando(false)
+        }
+    }
+    
+    async function cadastrar(email: string, senha: string) {
+        try {
+            setCarregando(true)
+            const resp = await firebase.auth().createUserWithEmailAndPassword(email, senha)
+            await configurarSessao(resp.user)
+            route.push('/')
+        } finally {
+            setCarregando(false)
+        }
+    }
+
     async function loginGoogle() {
         try {
             setCarregando(true)
             const resp = await firebase.auth().signInWithPopup(
                 new firebase.auth.GoogleAuthProvider()
             )
-            configurarSessao(resp.user)
+            await configurarSessao(resp.user)
             route.push('/')
         } finally {
             setCarregando(false)
@@ -89,6 +123,8 @@ export function AuthProvider(props: any) {
     return (
         <AuthContext.Provider value={{
             usuario,
+            cadastrar,
+            login,
             loginGoogle,
             logout,
             carregando
